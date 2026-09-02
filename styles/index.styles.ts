@@ -2,8 +2,10 @@ import { StyleSheet } from "react-native";
 
 import { colors } from "../theme/colors";
 import { fonts } from "../theme/fonts";
+import { stylesActions } from "./actions.styles";
 
 export const styles = StyleSheet.create({
+  ...stylesActions,
   ecran: {
     flex: 1,
     backgroundColor: colors.bgBase,
@@ -42,12 +44,56 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderLight,
     padding: 16,
+    gap: 14,
   },
   enTeteCarte: {
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
     gap: 12,
+  },
+  lienCarte: {
+    flex: 1,
+  },
+  actionsCarte: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  boutonSupprimer: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: colors.bgSubtle,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  boutonSupprimerActif: {
+    backgroundColor: colors.errorBg,
+  },
+  texteBoutonSupprimer: {
+    fontFamily: fonts.semiBold,
+    fontSize: 13,
+    color: colors.textMuted,
+  },
+  texteBoutonSupprimerActif: {
+    color: colors.error,
+  },
+  confirmation: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  texteConfirmation: {
+    fontFamily: fonts.medium,
+    fontSize: 13,
+    color: colors.textMedium,
+  },
+  actionsConfirmation: {
+    flexDirection: "row",
+    gap: 8,
   },
   titre: {
     fontFamily: fonts.bold,

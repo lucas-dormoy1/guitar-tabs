@@ -2,8 +2,10 @@ import { StyleSheet } from "react-native";
 
 import { colors } from "../theme/colors";
 import { fonts } from "../theme/fonts";
+import { stylesActions } from "./actions.styles";
 
 export const styles = StyleSheet.create({
+  ...stylesActions,
   ecran: {
     flex: 1,
     backgroundColor: colors.bgBase,
@@ -173,26 +175,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-  },
-  action: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 9,
-    backgroundColor: colors.bgSubtle,
-  },
-  texteAction: {
-    fontFamily: fonts.medium,
-    fontSize: 13,
-    color: colors.textMedium,
-  },
-  actionDanger: {
-    backgroundColor: colors.errorBg,
-  },
-  texteActionDanger: {
-    color: colors.error,
-  },
-  actionDesactivee: {
-    opacity: 0.4,
   },
   chipsAccords: {
     flexDirection: "row",

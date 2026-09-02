@@ -68,6 +68,7 @@ styles/                       ← Styles séparés (hors app/ pour éviter les c
 ├── chanson.styles.ts
 ├── tablature.styles.ts
 ├── accords.styles.ts
+├── actions.styles.ts             ← Styles de bouton d'action partagés (spread dans les autres)
 ├── edition.styles.ts             ← Commun aux deux éditeurs (blocs, libellés, actions, chips)
 ├── edition-grille.styles.ts
 ├── edition-pave.styles.ts
@@ -136,12 +137,21 @@ Les deux rendus (`Tablature` et `GrilleAccords`) acceptent `selection` + `onMesu
 - Les index passés à `onMesure` sont **relatifs au tableau `sections` reçu par le composant**. Comme l'aperçu ne rend que la section courante (`sections={[section]}`), il reçoit toujours `0` comme index de section et l'éditeur y substitue le vrai — d'où le `(_, iMesure)`.
 - Côté arpège, c'est `MesurePlacee` qui porte `indexSection` / `indexMesure` : le layout coupe une section en plusieurs systèmes, donc la position d'une mesure dessinée n'est **pas** déductible de son ordre à l'écran. Les zones tappables sont des `<Rect fill="transparent">` posés **après** le dessin (`onPress` est mappé sur `onClick` par `react-native-svg` sur web) ; le fond de sélection, lui, est dessiné **avant** les cordes pour rester sous les chiffres.
 
+## Liste des chansons
+
+- La carte n'est plus un `Pressable` unique : la zone titre/artiste est le `Link` de navigation et le bouton `✕` est son **frère**, pas son enfant. Des `Pressable` imbriqués déclenchent les deux `onPress` sur web (l'événement DOM remonte) — ne pas remettre le bouton à l'intérieur du lien.
+- **Confirmation en place** plutôt qu'`Alert` (qui ne marche pas sur web) : le `✕` ouvre une ligne « Supprimer cette chanson ? » avec Annuler / Supprimer, dans la carte, et le re-tap sur le `✕` referme (même convention de re-tap que les éditeurs). C'est le pattern à reprendre pour les suppressions de mesure / section.
+- L'état de confirmation est un `idAConfirmer` porté par **l'écran**, pas par la carte : une seule confirmation ouverte à la fois, et la suppression le remet à `null` avant de retirer la chanson.
+- `hitSlop` est ignoré par `Pressable` sur react-native-web (seul le `Touchable` legacy le lit) : les boutons-icônes doivent faire **32×32** par eux-mêmes, le `hitSlop` n'est là que pour le confort natif.
+- **`role` et `aria-*` plutôt que `accessibilityRole` / `accessibilityLabel`** : RNW 0.21 déprécie les seconds, et sans rôle un `Pressable` sort en `<div>` sans `tabindex`, donc inatteignable au clavier.
+
 ## Conventions de style
 
 - **Zéro couleur hex en dur** dans les `.tsx` ou `.styles.ts` — toujours passer par `theme/colors.ts` (les couleurs de la tablature y sont préfixées `tab*`).
 - **Zéro dimension en dur** dans le rendu de tablature — tout passe par `dimensionsTablature(echelle)` dans `theme/tablature.ts`, pour que les échelles S/M/L restent cohérentes.
 - **Styles séparés** : chaque écran/composant a son fichier `.styles.ts` dans `styles/` (jamais dans `app/`, où Expo Router traite tout fichier comme une route), qui exporte `styles`.
 - Les `.tsx` n'importent que `{ styles }` — pas de `StyleSheet` ni de couleur directement dans le JSX.
+- **Styles partagés entre écrans** : `styles/actions.styles.ts` exporte `stylesActions` (un objet brut, pas un `StyleSheet`) qu'on **spread** en tête du `StyleSheet.create` de chaque fichier qui en a besoin (`action`, `texteAction`, `actionDanger`, `texteActionDanger`, `actionDesactivee`). Les `.tsx` continuent de n'utiliser que `styles.action` — c'est ce qui garde la règle ci-dessus vraie tout en évitant de recopier le bouton d'action à chaque écran.
 - **Nommage en français** pour le métier (`mesure`, `corde`, `frette`, `pas`, `accordage`), comme le reste du projet.
 
 ## Palette
@@ -162,8 +172,7 @@ Direction retenue : **encre & blanc froid** — quasi monochrome, fond gris froi
 - Export / import JSON (backup et passage web ↔ téléphone) — les deux stockages sont distincts
 - **Factoriser les deux éditeurs** : `EditeurArpege` et `EditeurAccords` partagent ~130 lignes identiques (bloc `Structure`, en-tête de section avec le compteur de répétitions, les trois actions mesure/section, le clamp de `position`). À extraire en `BlocSection` + un hook de position, sinon chaque évolution devra être faite deux fois.
 - Échelles S/M/L pour la grille d'accords : l'écran de lecture ne les propose que pour l'arpège, les tailles de `accords.styles.ts` sont fixes
-- Confirmation ou annulation sur les suppressions de mesure / section (aujourd'hui immédiates ; `Alert` de RN ne marche pas sur web)
-- Suppression d'une chanson depuis la liste
+- Confirmation ou annulation sur les suppressions de mesure / section (aujourd'hui immédiates ; reprendre la confirmation en place de la liste, `Alert` de RN ne marche pas sur web)
 - Champs `bpm`, `tonalite`, `statut`, `notes` toujours dans le modèle mais **ni éditables ni affichés** — à trancher : les rendre utiles (tri, filtre) ou les sortir du modèle. Le `capo` est éditable depuis l'éditeur.
 - Accords : saisie libre d'un accord hors du pavé (slash chords, `add11`…) et diagrammes de position sur le manche
 - Icône, splash screen, favicon (`assets/`, à référencer dans `app.json`)
