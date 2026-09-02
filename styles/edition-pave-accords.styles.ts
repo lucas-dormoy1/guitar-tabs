@@ -78,6 +78,9 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  chipValeur: {
+    minWidth: 76,
+  },
   chipActive: {
     backgroundColor: colors.primaryBg,
     borderColor: colors.primary,

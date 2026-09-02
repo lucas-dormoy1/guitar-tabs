@@ -4,7 +4,7 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { styles } from "../../styles/edition.styles";
 import { colors } from "../../theme/colors";
 import type { ChansonAccords, PositionMesure } from "../../types/chanson";
-import { changerRacine, changerSuffixe } from "../../utils/accords";
+import { changerBasse, changerRacine, changerSuffixe } from "../../utils/accords";
 import {
   ACCORDS_MAX,
   ajouterMesure,
@@ -77,6 +77,21 @@ export function EditeurAccords({ chanson, onChanger }: Props) {
         indexMesure,
         indexAccord,
         changerSuffixe(accordSelectionne, suffixe)
+      )
+    );
+  };
+
+  const choisirBasse = (basse: string | null) => {
+    if (indexAccord === null || !accordSelectionne) {
+      return;
+    }
+    onChanger(
+      poserAccord(
+        chanson,
+        indexSection,
+        indexMesure,
+        indexAccord,
+        changerBasse(accordSelectionne, basse)
       )
     );
   };
@@ -259,6 +274,7 @@ export function EditeurAccords({ chanson, onChanger }: Props) {
         accord={accordSelectionne}
         onRacine={choisirRacine}
         onSuffixe={choisirSuffixe}
+        onBasse={choisirBasse}
         onRetirer={retirer}
       />
 

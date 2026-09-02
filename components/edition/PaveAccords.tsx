@@ -1,17 +1,68 @@
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { styles } from "../../styles/edition-pave-accords.styles";
-import { analyserAccord, memeRacine, RACINES, SUFFIXES } from "../../utils/accords";
+import {
+  analyserAccord,
+  memeBasse,
+  memeRacine,
+  RACINES,
+  SUFFIXES,
+} from "../../utils/accords";
+
+type PropsRangeeNotes = {
+  estActive: (note: string) => boolean;
+  onChoisir: (note: string) => void;
+};
+
+function RangeeNotes({ estActive, onChoisir }: PropsRangeeNotes) {
+  return (
+    <View style={styles.rangee}>
+      {RACINES.map((note) => {
+        const active = estActive(note);
+        return (
+          <Pressable
+            key={note}
+            onPress={() => onChoisir(note)}
+            role="button"
+            aria-pressed={active}
+            style={[styles.touche, active && styles.toucheActive]}
+          >
+            <Text style={[styles.texteTouche, active && styles.texteToucheActive]}>
+              {note}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
 
 type Props = {
   actif: boolean;
   accord: string | null;
   onRacine: (racine: string) => void;
   onSuffixe: (suffixe: string) => void;
+  onBasse: (basse: string | null) => void;
   onRetirer: () => void;
 };
 
-export function PaveAccords({ actif, accord, onRacine, onSuffixe, onRetirer }: Props) {
+export function PaveAccords({
+  actif,
+  accord,
+  onRacine,
+  onSuffixe,
+  onBasse,
+  onRetirer,
+}: Props) {
+  const [basseOuverte, setBasseOuverte] = useState(false);
+
+  useEffect(() => {
+    if (accord === null) {
+      setBasseOuverte(false);
+    }
+  }, [accord]);
+
   if (!actif) {
     return (
       <Text style={styles.consigne}>
@@ -24,22 +75,10 @@ export function PaveAccords({ actif, accord, onRacine, onSuffixe, onRetirer }: P
 
   return (
     <View style={styles.conteneur}>
-      <View style={styles.rangee}>
-        {RACINES.map((racine) => {
-          const active = accord !== null && memeRacine(accord, racine);
-          return (
-            <Pressable
-              key={racine}
-              onPress={() => onRacine(racine)}
-              style={[styles.touche, active && styles.toucheActive]}
-            >
-              <Text style={[styles.texteTouche, active && styles.texteToucheActive]}>
-                {racine}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+      <RangeeNotes
+        estActive={(note) => memeRacine(analyse, note)}
+        onChoisir={onRacine}
+      />
 
       <View style={styles.entete}>
         <Text style={styles.libelle}>Couleur</Text>
@@ -73,6 +112,34 @@ export function PaveAccords({ actif, accord, onRacine, onSuffixe, onRetirer }: P
           );
         })}
       </View>
+
+      <View style={styles.entete}>
+        <Text style={styles.libelle}>Basse</Text>
+        <Pressable
+          onPress={() => setBasseOuverte(!basseOuverte)}
+          disabled={accord === null}
+          role="button"
+          aria-expanded={basseOuverte}
+          aria-label="Choisir la basse de l'accord"
+          style={[
+            styles.chip,
+            styles.chipValeur,
+            basseOuverte && styles.chipActive,
+            accord === null && styles.chipDesactive,
+          ]}
+        >
+          <Text style={[styles.texteChip, basseOuverte && styles.texteChipActive]}>
+            {analyse?.basse ? `/${analyse.basse}` : "Aucune"}
+          </Text>
+        </Pressable>
+      </View>
+
+      {basseOuverte && accord !== null ? (
+        <RangeeNotes
+          estActive={(note) => memeBasse(analyse, note)}
+          onChoisir={(note) => onBasse(memeBasse(analyse, note) ? null : note)}
+        />
+      ) : null}
     </View>
   );
 }

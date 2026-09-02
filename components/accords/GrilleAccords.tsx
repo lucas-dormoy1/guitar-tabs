@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { styles } from "../../styles/accords.styles";
 import type { PositionMesure, SectionAccords } from "../../types/chanson";
-import { decouperEnLignes } from "../../utils/accords";
+import { decouperEnLignes, partiesAccord } from "../../utils/accords";
 
 type Props = {
   sections: SectionAccords[];
@@ -54,11 +54,17 @@ export function GrilleAccords({ sections, mesuresParLigne, selection, onMesure }
                         ]}
                       >
                         <View style={styles.accords}>
-                          {cellule.mesure.accords.map((accord, iAccord) => (
-                            <Text key={iAccord} style={styles.accord} numberOfLines={1}>
-                              {accord}
-                            </Text>
-                          ))}
+                          {cellule.mesure.accords.map((accord, iAccord) => {
+                            const { principal, basse } = partiesAccord(accord);
+                            return (
+                              <Text key={iAccord} style={styles.accord} numberOfLines={1}>
+                                {principal}
+                                {basse ? (
+                                  <Text style={styles.basse}>{`/${basse}`}</Text>
+                                ) : null}
+                              </Text>
+                            );
+                          })}
                         </View>
                         {avecParoles ? (
                           <Text style={styles.paroles}>{cellule.mesure.paroles ?? ""}</Text>

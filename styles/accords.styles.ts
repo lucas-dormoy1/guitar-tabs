@@ -73,6 +73,11 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.tabFrette,
   },
+  basse: {
+    fontFamily: fonts.semiBold,
+    fontSize: 12,
+    color: colors.tabAccordBasse,
+  },
   paroles: {
     fontFamily: fonts.regular,
     fontSize: 13,

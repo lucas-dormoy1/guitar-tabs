@@ -38,6 +38,7 @@ export const colors = {
   tabBarreMesure: "#7C828C",
   tabBarreForte: "#5A606A",
   tabFrette: "#14161A",
+  tabAccordBasse: "#3F444D",
   tabTechnique: "#2F4FCF",
   tabLabel: "#8A8F99",
   tabNumeroMesure: "#B0B5BE",

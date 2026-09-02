@@ -126,8 +126,10 @@ Une chanson `accords` se décompose en `sections[] → mesures[]`, chaque `Mesur
 
 - **Rendu** (`GrilleAccords`) : pas de SVG — des `View`/`Text`, une mesure = une cellule `flex: 1` avec sa barre de mesure à gauche (la dernière cellule remplie de la ligne porte aussi la barre de droite). Plusieurs accords dans une mesure se partagent la largeur à parts égales, ce qui donne leur position approximative dans la mesure. Même plafond de largeur que la tablature (`LARGEUR_MAX`, centré).
 - La zone paroles d'une ligne n'est rendue que si **au moins une** mesure de cette ligne a des paroles, pour ne pas laisser de bandes vides sur les grilles sans texte.
+- Un accord à basse est rendu en deux morceaux (`partiesAccord`) : `D` en gras noir, `/F#` en plus petit et plus clair, dans un `Text` imbriqué — c'est la convention des grilles, et ça évite que la basse concurrence l'accord d'un coup d'œil. Un nom d'accord non analysable est rendu tel quel.
 - **Éditeur** : une mesure à la fois via `BarreStructure` (le composant est commun aux deux formats, d'où le type `SectionQuelconque`). Les accords de la mesure sont des chips ; tap sur une chip → sélection, tap sur `+` → nouvel emplacement, **re-tap = désélection**. Contrairement à l'arpège, le re-tap n'efface pas : la suppression passe par « Retirer » du pavé, parce qu'un accord tapé est plus coûteux à ressaisir qu'une frette.
 - **Pavé** : la rangée de racines écrit ou remplace la racine en gardant la couleur (`changerRacine`), la rangée de couleurs remplace le suffixe (`changerSuffixe`). Les couleurs sont désactivées tant qu'aucun accord n'existe à l'emplacement sélectionné.
+- **Basse (slash chords, `D/F#`)** : troisième rangée du pavé, **repliée par défaut** — la basse est rare, et le chip d'en-tête affiche déjà la valeur courante (« Aucune » ou « /F# »), donc on ne déplie que pour la changer. Les douze mêmes notes que les racines ; **re-tap sur la basse active la retire** (pas de touche « aucune » séparée, même convention de re-tap que partout ailleurs). `changerBasse` préserve racine et couleur, et `changerRacine` / `changerSuffixe` préservent la basse — les trois rangées sont indépendantes.
 - La route `app/edition/[id].tsx` ne fait plus que les champs communs (titre, artiste, capo) et l'aiguillage vers `EditeurArpege` ou `EditeurAccords`, chacun recevant `chanson` + `onChanger`.
 
 ## Sélection de la mesure
@@ -174,7 +176,7 @@ Direction retenue : **encre & blanc froid** — quasi monochrome, fond gris froi
 - Échelles S/M/L pour la grille d'accords : l'écran de lecture ne les propose que pour l'arpège, les tailles de `accords.styles.ts` sont fixes
 - Confirmation ou annulation sur les suppressions de mesure / section (aujourd'hui immédiates ; reprendre la confirmation en place de la liste, `Alert` de RN ne marche pas sur web)
 - Champs `bpm`, `tonalite`, `statut`, `notes` toujours dans le modèle mais **ni éditables ni affichés** — à trancher : les rendre utiles (tri, filtre) ou les sortir du modèle. Le `capo` est éditable depuis l'éditeur.
-- Accords : saisie libre d'un accord hors du pavé (slash chords, `add11`…) et diagrammes de position sur le manche
+- Accords : saisie libre d'un accord hors du pavé (couleurs absentes de la liste : `add11`, `7b9`…) et diagrammes de position sur le manche — les basses, elles, sont couvertes par la rangée « Basse »
 - Icône, splash screen, favicon (`assets/`, à référencer dans `app.json`)
 - `eas init` pour obtenir le `projectId` (l'`eas.json` est prêt)
 - Tests (Jest + jest-expo), en reprenant la config d'Intermittence si besoin

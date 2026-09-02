@@ -84,10 +84,31 @@ export function changerSuffixe(nom: string, suffixe: string): string {
   return `${analyse.racine}${suffixe}${analyse.basse ? `/${analyse.basse}` : ""}`;
 }
 
-export function memeRacine(nom: string, racine: string): boolean {
+export function changerBasse(nom: string, basse: string | null): string {
   const analyse = analyserAccord(nom);
+  if (!analyse) {
+    return nom;
+  }
+  return `${analyse.racine}${analyse.suffixe}${basse ? `/${basse}` : ""}`;
+}
+
+export function memeRacine(analyse: AccordAnalyse | null, racine: string): boolean {
   const cible = analyserAccord(racine);
   return analyse !== null && cible !== null && analyse.hauteur === cible.hauteur;
+}
+
+export function memeBasse(analyse: AccordAnalyse | null, basse: string): boolean {
+  return (
+    analyse?.basse != null && memeRacine(analyserAccord(analyse.basse), basse)
+  );
+}
+
+export function partiesAccord(nom: string): { principal: string; basse: string | null } {
+  const analyse = analyserAccord(nom);
+  if (!analyse || !analyse.basse) {
+    return { principal: nom, basse: null };
+  }
+  return { principal: `${analyse.racine}${analyse.suffixe}`, basse: analyse.basse };
 }
 
 export function decouperEnLignes(
