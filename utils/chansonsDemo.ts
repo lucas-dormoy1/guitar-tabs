@@ -1,4 +1,9 @@
-import { ACCORDAGE_STANDARD, type Chanson, type ChansonArpege } from "../types/chanson";
+import {
+  ACCORDAGE_STANDARD,
+  type Chanson,
+  type ChansonAccords,
+  type ChansonArpege,
+} from "../types/chanson";
 
 const arpegeDemo: ChansonArpege = {
   id: "demo-arpege",
@@ -110,4 +115,47 @@ const arpegeDemo: ChansonArpege = {
   ],
 };
 
-export const chansonsDemo: Chanson[] = [arpegeDemo];
+const accordsDemo: ChansonAccords = {
+  id: "demo-accords",
+  titre: "Grille de démo",
+  artiste: "GuitarTabs",
+  format: "accords",
+  statut: "a-apprendre",
+  bpm: 92,
+  tonalite: "G",
+  capo: 2,
+  mesuresParLigne: 4,
+  notes: "Grille de démonstration : elle sert à valider le rendu accords + paroles.",
+  creeLe: "2026-09-01T00:00:00.000Z",
+  majLe: "2026-09-01T00:00:00.000Z",
+  sections: [
+    {
+      id: "couplet",
+      nom: "Couplet",
+      repetitions: 2,
+      mesures: [
+        { accords: ["G"], paroles: "Sur le chemin" },
+        { accords: ["D"], paroles: "que l'on connaît" },
+        { accords: ["Em"], paroles: "il reste encore" },
+        { accords: ["C"], paroles: "un peu de jour" },
+      ],
+    },
+    {
+      id: "refrain",
+      nom: "Refrain",
+      repetitions: 1,
+      mesures: [
+        { accords: ["C", "D"], paroles: "Et l'on repart" },
+        { accords: ["G"], paroles: "sans se presser" },
+        { accords: ["Am7"], paroles: "le temps qu'il faut" },
+        { accords: ["D/F#"], paroles: "pour respirer" },
+        { accords: ["C"] },
+        { accords: ["G/B"] },
+        { accords: ["Am7", "D7"] },
+        { accords: ["G"] },
+      ],
+    },
+  ],
+};
+
+export const chansonsDemo: Chanson[] = [arpegeDemo, accordsDemo];

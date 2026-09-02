@@ -3,6 +3,8 @@ import type { Mesure, Note, Section } from "../types/chanson";
 
 export type MesurePlacee = {
   numero: number;
+  indexSection: number;
+  indexMesure: number;
   x: number;
   largeur: number;
   largeurPas: number;
@@ -31,10 +33,24 @@ export type LayoutTablature = {
 type Groupe = {
   mesures: Mesure[];
   premierNumero: number;
+  premierIndex: number;
 };
 
 function largeurNominale(pas: number, dims: DimensionsTablature): number {
   return pas * dims.largeurPas + dims.padMesure * 2;
+}
+
+function fermerGroupe(
+  mesures: Mesure[],
+  numero: number,
+  premierNumeroSection: number
+): Groupe {
+  const premierNumero = numero - mesures.length;
+  return {
+    mesures,
+    premierNumero,
+    premierIndex: premierNumero - premierNumeroSection,
+  };
 }
 
 function grouperEnSystemes(
@@ -51,7 +67,7 @@ function grouperEnSystemes(
   for (const mesure of section.mesures) {
     const largeur = largeurNominale(mesure.pas, dims);
     if (mesures.length > 0 && largeurCourante + largeur > largeurUtile) {
-      groupes.push({ mesures, premierNumero: numero - mesures.length });
+      groupes.push(fermerGroupe(mesures, numero, premierNumero));
       mesures = [];
       largeurCourante = 0;
     }
@@ -61,7 +77,7 @@ function grouperEnSystemes(
   }
 
   if (mesures.length > 0) {
-    groupes.push({ mesures, premierNumero: numero - mesures.length });
+    groupes.push(fermerGroupe(mesures, numero, premierNumero));
   }
 
   return groupes;
@@ -84,7 +100,7 @@ export function calculerLayout(
   let y = 0;
   let numero = 1;
 
-  for (const section of sections) {
+  sections.forEach((section, indexSection) => {
     const groupes = grouperEnSystemes(section, largeurUtile, dims, numero);
     numero += section.mesures.length;
 
@@ -98,6 +114,8 @@ export function calculerLayout(
         const largeur = mesure.pas * largeurPas + dims.padMesure * 2;
         const placee: MesurePlacee = {
           numero: groupe.premierNumero + position,
+          indexSection,
+          indexMesure: groupe.premierIndex + position,
           x,
           largeur,
           largeurPas,
@@ -128,7 +146,7 @@ export function calculerLayout(
 
       y += hauteur + dims.espaceEntreSystemes;
     });
-  }
+  });
 
   const dernier = systemes[systemes.length - 1];
 

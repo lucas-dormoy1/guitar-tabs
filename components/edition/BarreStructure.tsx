@@ -1,10 +1,10 @@
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { styles } from "../../styles/edition.styles";
-import type { Section } from "../../types/chanson";
+import type { SectionBase } from "../../types/chanson";
 
 type Props = {
-  sections: Section[];
+  sections: SectionBase<unknown>[];
   indexSection: number;
   indexMesure: number;
   onSelectionner: (indexSection: number, indexMesure: number) => void;

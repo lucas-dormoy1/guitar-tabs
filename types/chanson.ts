@@ -14,11 +14,25 @@ export type Mesure = {
   notes: Note[];
 };
 
-export type Section = {
+export type MesureAccords = {
+  accords: string[];
+  paroles?: string;
+};
+
+export type SectionBase<TMesure> = {
   id: string;
   nom: string;
   repetitions: number;
-  mesures: Mesure[];
+  mesures: TMesure[];
+};
+
+export type Section = SectionBase<Mesure>;
+
+export type SectionAccords = SectionBase<MesureAccords>;
+
+export type PositionMesure = {
+  section: number;
+  mesure: number;
 };
 
 export type StatutApprentissage = "a-apprendre" | "en-cours" | "maitrisee";
@@ -44,7 +58,8 @@ export type ChansonArpege = ChansonBase & {
 
 export type ChansonAccords = ChansonBase & {
   format: "accords";
-  contenu: string;
+  sections: SectionAccords[];
+  mesuresParLigne: number;
 };
 
 export type Chanson = ChansonArpege | ChansonAccords;
@@ -55,6 +70,11 @@ export function lettreCorde(accordage: string[], corde: Corde): string {
   return accordage[accordage.length - corde] ?? "";
 }
 
-export function compterMesures(chanson: ChansonArpege): number {
-  return chanson.sections.reduce((total, section) => total + section.mesures.length, 0);
+export const CAPO_MAX = 12;
+
+export function libelleCapo(capo: number | undefined): string {
+  if (!capo) {
+    return "Aucun";
+  }
+  return capo === 1 ? "1re case" : `${capo}e case`;
 }

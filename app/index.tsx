@@ -3,14 +3,9 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { useChansons } from "../contexts/ChansonsContext";
 import { styles } from "../styles/index.styles";
-import { compterMesures, type Chanson } from "../types/chanson";
-import { nouvelleChanson } from "../utils/editionChanson";
-
-const LIBELLES_STATUT = {
-  "a-apprendre": "À apprendre",
-  "en-cours": "En cours",
-  maitrisee: "Maîtrisée",
-} as const;
+import type { Chanson } from "../types/chanson";
+import { nouvelleChansonAccords } from "../utils/editionAccords";
+import { nouvelleChansonArpege } from "../utils/editionChanson";
 
 function Carte({ chanson }: { chanson: Chanson }) {
   return (
@@ -27,26 +22,6 @@ function Carte({ chanson }: { chanson: Chanson }) {
             </Text>
           </View>
         </View>
-        <View style={styles.meta}>
-          <View style={styles.puce}>
-            <Text style={styles.puceTexte}>{LIBELLES_STATUT[chanson.statut]}</Text>
-          </View>
-          {chanson.tonalite ? (
-            <View style={styles.puce}>
-              <Text style={styles.puceTexte}>{chanson.tonalite}</Text>
-            </View>
-          ) : null}
-          {chanson.bpm ? (
-            <View style={styles.puce}>
-              <Text style={styles.puceTexte}>{`${chanson.bpm} bpm`}</Text>
-            </View>
-          ) : null}
-          {chanson.format === "arpege" ? (
-            <View style={styles.puce}>
-              <Text style={styles.puceTexte}>{`${compterMesures(chanson)} mesures`}</Text>
-            </View>
-          ) : null}
-        </View>
       </Pressable>
     </Link>
   );
@@ -56,17 +31,29 @@ export default function EcranAccueil() {
   const { chansons, chargement, ajouter } = useChansons();
   const router = useRouter();
 
-  const creer = () => {
-    const chanson = nouvelleChanson("", "");
+  const creer = (chanson: Chanson) => {
     ajouter(chanson);
     router.push({ pathname: "/edition/[id]", params: { id: chanson.id } });
   };
 
   return (
     <ScrollView style={styles.ecran} contentContainerStyle={styles.liste}>
-      <Pressable onPress={creer} style={styles.boutonAjout}>
-        <Text style={styles.texteBoutonAjout}>+ Nouvelle chanson</Text>
-      </Pressable>
+      <View style={styles.boutonsAjout}>
+        <Pressable
+          onPress={() => creer(nouvelleChansonArpege("", ""))}
+          style={styles.boutonAjout}
+        >
+          <Text style={styles.texteBoutonAjout}>+ Arpège</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => creer(nouvelleChansonAccords("", ""))}
+          style={[styles.boutonAjout, styles.boutonAjoutSecondaire]}
+        >
+          <Text style={[styles.texteBoutonAjout, styles.texteBoutonAjoutSecondaire]}>
+            + Accords
+          </Text>
+        </Pressable>
+      </View>
 
       {chargement ? null : chansons.length === 0 ? (
         <View style={styles.vide}>

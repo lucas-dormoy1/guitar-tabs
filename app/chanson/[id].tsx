@@ -2,11 +2,12 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { GrilleAccords } from "../../components/accords/GrilleAccords";
 import { Tablature } from "../../components/tablature/Tablature";
 import { useChansons } from "../../contexts/ChansonsContext";
 import { styles } from "../../styles/chanson.styles";
 import { ECHELLES, type NomEchelle } from "../../theme/tablature";
-import { compterMesures } from "../../types/chanson";
+import { libelleCapo } from "../../types/chanson";
 
 const NOMS_ECHELLE = Object.keys(ECHELLES) as NomEchelle[];
 
@@ -38,33 +39,13 @@ export default function EcranChanson() {
         </Link>
       </View>
 
-      <View style={styles.meta}>
-        {chanson.tonalite ? (
+      {chanson.capo ? (
+        <View style={styles.meta}>
           <View style={styles.puce}>
-            <Text style={styles.puceTexte}>{chanson.tonalite}</Text>
+            <Text style={styles.puceTexte}>{`Capo ${libelleCapo(chanson.capo)}`}</Text>
           </View>
-        ) : null}
-        {chanson.bpm ? (
-          <View style={styles.puce}>
-            <Text style={styles.puceTexte}>{`${chanson.bpm} bpm`}</Text>
-          </View>
-        ) : null}
-        {chanson.capo ? (
-          <View style={styles.puce}>
-            <Text style={styles.puceTexte}>{`Capo ${chanson.capo}`}</Text>
-          </View>
-        ) : null}
-        {chanson.format === "arpege" ? (
-          <>
-            <View style={styles.puce}>
-              <Text style={styles.puceTexte}>{chanson.accordage.join(" ")}</Text>
-            </View>
-            <View style={styles.puce}>
-              <Text style={styles.puceTexte}>{`${compterMesures(chanson)} mesures`}</Text>
-            </View>
-          </>
-        ) : null}
-      </View>
+        </View>
+      ) : null}
 
       {chanson.notes ? (
         <View style={styles.notes}>
@@ -114,9 +95,10 @@ export default function EcranChanson() {
           </View>
         </>
       ) : (
-        <View style={styles.notes}>
-          <Text style={styles.notesTexte}>{chanson.contenu}</Text>
-        </View>
+        <GrilleAccords
+          sections={chanson.sections}
+          mesuresParLigne={chanson.mesuresParLigne}
+        />
       )}
     </ScrollView>
   );

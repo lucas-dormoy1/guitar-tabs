@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import type { Chanson } from "../types/chanson";
+import { migrerChansons } from "./migrations";
 
 const CLE = "guitartabs.chansons.v1";
 
@@ -12,7 +13,7 @@ export async function lireChansons(): Promise<Chanson[] | null> {
 
   try {
     const donnees = JSON.parse(brut);
-    return Array.isArray(donnees) ? (donnees as Chanson[]) : null;
+    return Array.isArray(donnees) ? migrerChansons(donnees as Chanson[]) : null;
   } catch {
     return null;
   }

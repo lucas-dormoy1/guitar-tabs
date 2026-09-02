@@ -4,7 +4,13 @@ import { G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { colors } from "../../theme/colors";
 import { fonts } from "../../theme/fonts";
 import type { DimensionsTablature } from "../../theme/tablature";
-import { lettreCorde, type Corde, type Note, type Technique } from "../../types/chanson";
+import {
+  lettreCorde,
+  type Corde,
+  type Note,
+  type PositionMesure,
+  type Technique,
+} from "../../types/chanson";
 import {
   noteSuivanteSurCorde,
   xPas,
@@ -25,10 +31,39 @@ type Props = {
   systeme: SystemePlace;
   accordage: string[];
   dims: DimensionsTablature;
+  selection?: PositionMesure | null;
+  onMesure?: (indexSection: number, indexMesure: number) => void;
 };
 
 function largeurTexte(texte: string, taille: number): number {
   return texte.length * taille * 0.62;
+}
+
+function ZoneMesure({
+  mesure,
+  yHaut,
+  yBas,
+  dims,
+  fill,
+  onPress,
+}: {
+  mesure: MesurePlacee;
+  yHaut: number;
+  yBas: number;
+  dims: DimensionsTablature;
+  fill: string;
+  onPress?: () => void;
+}) {
+  return (
+    <Rect
+      x={mesure.x}
+      y={yHaut - dims.espacementCordes * 0.7}
+      width={mesure.largeur}
+      height={yBas - yHaut + dims.espacementCordes * 1.4}
+      fill={fill}
+      onPress={onPress}
+    />
+  );
 }
 
 function Frette({
@@ -193,14 +228,30 @@ function Mesure({
   );
 }
 
-export function Systeme({ systeme, accordage, dims }: Props) {
+export function Systeme({ systeme, accordage, dims, selection, onMesure }: Props) {
   const yHaut = yCorde(systeme, 1, dims);
   const yBas = yCorde(systeme, 6, dims);
   const xFin = systeme.largeur;
   const avecReprise = systeme.repetitions > 1;
 
+  const selectionnee = (mesure: MesurePlacee) =>
+    selection?.section === mesure.indexSection && selection.mesure === mesure.indexMesure;
+
   return (
     <G>
+      {systeme.mesures
+        .filter(selectionnee)
+        .map((mesure) => (
+          <ZoneMesure
+            key={mesure.numero}
+            mesure={mesure}
+            yHaut={yHaut}
+            yBas={yBas}
+            dims={dims}
+            fill={colors.tabSelection}
+          />
+        ))}
+
       {systeme.nomSection ? (
         <SvgText
           x={0}
@@ -283,6 +334,20 @@ export function Systeme({ systeme, accordage, dims }: Props) {
           </SvgText>
         </>
       ) : null}
+
+      {onMesure
+        ? systeme.mesures.map((mesure) => (
+            <ZoneMesure
+              key={`zone-${mesure.numero}`}
+              mesure={mesure}
+              yHaut={yHaut}
+              yBas={yBas}
+              dims={dims}
+              fill="transparent"
+              onPress={() => onMesure(mesure.indexSection, mesure.indexMesure)}
+            />
+          ))
+        : null}
     </G>
   );
 }

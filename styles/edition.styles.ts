@@ -132,6 +132,13 @@ export const styles = StyleSheet.create({
     minWidth: 28,
     textAlign: "center",
   },
+  valeurCapo: {
+    fontFamily: fonts.semiBold,
+    fontSize: 14,
+    color: colors.textDark,
+    minWidth: 78,
+    textAlign: "center",
+  },
   ligneOptions: {
     flexDirection: "row",
     alignItems: "center",
@@ -186,6 +193,55 @@ export const styles = StyleSheet.create({
   },
   actionDesactivee: {
     opacity: 0.4,
+  },
+  chipsAccords: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 8,
+  },
+  chipAccord: {
+    minWidth: 58,
+    height: 40,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: colors.bgSubtle,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  chipAccordActive: {
+    backgroundColor: colors.primary,
+  },
+  texteChipAccord: {
+    fontFamily: fonts.bold,
+    fontSize: 16,
+    color: colors.textDark,
+  },
+  texteChipAccordActif: {
+    color: colors.textOnPrimary,
+  },
+  chipAccordAjout: {
+    backgroundColor: colors.bgCard,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderStyle: "dashed",
+  },
+  texteChipAccordAjout: {
+    fontFamily: fonts.semiBold,
+    fontSize: 16,
+    color: colors.textMuted,
+  },
+  champParoles: {
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.textDark,
+    backgroundColor: colors.bgSubtle,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    minHeight: 62,
+    textAlignVertical: "top",
   },
   apercu: {
     gap: 8,

@@ -4,7 +4,7 @@ import Svg from "react-native-svg";
 
 import { styles } from "../../styles/tablature.styles";
 import { dimensionsTablature, LARGEUR_MAX } from "../../theme/tablature";
-import type { Section } from "../../types/chanson";
+import type { PositionMesure, Section } from "../../types/chanson";
 import { calculerLayout } from "../../utils/layoutTablature";
 import { Systeme } from "./Systeme";
 
@@ -12,9 +12,11 @@ type Props = {
   sections: Section[];
   accordage: string[];
   echelle: number;
+  selection?: PositionMesure | null;
+  onMesure?: (indexSection: number, indexMesure: number) => void;
 };
 
-export function Tablature({ sections, accordage, echelle }: Props) {
+export function Tablature({ sections, accordage, echelle, selection, onMesure }: Props) {
   const [largeurConteneur, setLargeurConteneur] = useState(0);
   const dims = useMemo(() => dimensionsTablature(echelle), [echelle]);
   const largeur = Math.min(largeurConteneur, LARGEUR_MAX);
@@ -32,7 +34,14 @@ export function Tablature({ sections, accordage, echelle }: Props) {
       {layout ? (
         <Svg width={layout.largeurTotale} height={layout.hauteurTotale}>
           {layout.systemes.map((systeme, index) => (
-            <Systeme key={index} systeme={systeme} accordage={accordage} dims={dims} />
+            <Systeme
+              key={index}
+              systeme={systeme}
+              accordage={accordage}
+              dims={dims}
+              selection={selection}
+              onMesure={onMesure}
+            />
           ))}
         </Svg>
       ) : null}

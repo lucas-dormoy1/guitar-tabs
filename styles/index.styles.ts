@@ -12,7 +12,12 @@ export const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
+  boutonsAjout: {
+    flexDirection: "row",
+    gap: 10,
+  },
   boutonAjout: {
+    flex: 1,
     backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 13,
@@ -23,13 +28,20 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.textOnPrimary,
   },
+  boutonAjoutSecondaire: {
+    backgroundColor: colors.bgCard,
+    borderWidth: 1,
+    borderColor: colors.primaryLight,
+  },
+  texteBoutonAjoutSecondaire: {
+    color: colors.primaryDark,
+  },
   carte: {
     backgroundColor: colors.bgCard,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.borderLight,
     padding: 16,
-    gap: 10,
   },
   enTeteCarte: {
     flexDirection: "row",
@@ -60,22 +72,6 @@ export const styles = StyleSheet.create({
     color: colors.primaryDark,
     textTransform: "uppercase",
     letterSpacing: 0.4,
-  },
-  meta: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  puce: {
-    backgroundColor: colors.bgSubtle,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  puceTexte: {
-    fontFamily: fonts.medium,
-    fontSize: 12,
-    color: colors.textMedium,
   },
   vide: {
     padding: 32,

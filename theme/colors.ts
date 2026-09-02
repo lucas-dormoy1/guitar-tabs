@@ -41,6 +41,7 @@ export const colors = {
   tabTechnique: "#2F4FCF",
   tabLabel: "#8A8F99",
   tabNumeroMesure: "#B0B5BE",
+  tabSelection: "#E6EAFA",
 
   // Divers
   overlay: "rgba(20, 22, 26, 0.45)",

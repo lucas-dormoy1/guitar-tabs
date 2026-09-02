@@ -35,7 +35,7 @@ export function nouvelleSection(nom: string, pas = PAS_PAR_DEFAUT): Section {
   };
 }
 
-export function nouvelleChanson(titre: string, artiste: string): ChansonArpege {
+export function nouvelleChansonArpege(titre: string, artiste: string): ChansonArpege {
   const date = maintenant();
   return {
     id: Crypto.randomUUID(),
