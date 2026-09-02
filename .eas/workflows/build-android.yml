@@ -1,0 +1,24 @@
+name: Build Android (release)
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+jobs:
+  typecheck:
+    name: Typecheck
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: tsc --noEmit
+        run: npm run typecheck
+
+  build_android:
+    name: APK Android (preview)
+    needs: [typecheck]
+    type: build
+    params:
+      platform: android
+      profile: preview

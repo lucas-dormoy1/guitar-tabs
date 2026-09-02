@@ -50,6 +50,17 @@ npx eas-cli@latest build --profile production --platform android
 
 Les profils sont dans `eas.json` : `preview` est en `apk` + `distribution: internal`, c'est celui à utiliser pour installer sur son propre téléphone (l'URL du build en fin de commande, ou expo.dev → Builds). `development` suppose `expo-dev-client`, **absent des dépendances** — inutilisable en l'état. Côté iOS, un build sur appareil demande un compte Apple Developer payant et `app.json` n'a pas de `bundleIdentifier` : sur iPhone, rester sur Expo Go (`npm start`).
 
+### Workflow CI (`.eas/workflows/build-android.yml`)
+
+Un tag **`vX.Y.Z`** poussé déclenche un typecheck puis un build `preview` Android sur l'infra EAS. Pas de GitHub Actions : les **EAS Workflows** tournent chez Expo, le `.yml` versionné ici est la seule source de vérité.
+
+- **Le trigger est `tags: [v*]`, pas `branches: [main]`** — c'est délibéré : le plan gratuit donne **15 builds Android/mois** sans dépassement possible (quota épuisé = plus de build jusqu'au 1er du mois suivant), donc builder chaque commit de `main` grillerait le quota sur des changements de doc ou de style. On build quand on décide de se livrer une version. Le workflow accepte aussi `workflow_dispatch` pour relancer un build sans re-tagger.
+- La procédure complète (pré-vol, bump `app.json` + `package.json`, tag, push, suivi) est dans le skill **`/release`** (`.claude/skills/release/SKILL.md`).
+- Le déclencheur `on.push` suppose que le repo GitHub est **connecté au projet EAS** (GitHub App Expo installée + repo lié dans expo.dev → project settings → GitHub). Sans ça le fichier est inerte et il faut lancer à la main : `npx eas-cli@latest workflow:run .eas/workflows/build-android.yml`.
+- Le job `typecheck` (`eas/checkout` + `eas/install_node_modules` + `npm run typecheck`) garde le build derrière un `needs` : `tsc` n'est **pas** exécuté par un build EAS, donc sans lui on brûle un build Android sur du TS cassé. Il consomme les 60 min/mois de Workflows, quota distinct de celui des builds.
+- Android seulement, pour les mêmes raisons qu'au-dessus (pas de compte Apple Developer).
+- `npx eas-cli@latest workflow:list` / `workflow:view` pour suivre les exécutions.
+
 ## Architecture
 
 ```
