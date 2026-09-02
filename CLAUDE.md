@@ -37,6 +37,19 @@ npm run typecheck  # tsc --noEmit
 - ⚠️ Le `.gitconfig` global de la machine est celui du compte **pro Agicap** et n'a aucun `includeIf` : ne jamais commiter ici sans que la config locale soit en place (`git config --local --get user.email` doit renvoyer l'adresse perso).
 - **Conventional commits** (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `test:`)
 
+## Build (EAS)
+
+- Compte Expo **`mimiche`** (le compte perso, cf. section Git) — `owner` et `extra.eas.projectId` sont dans `app.json`, projet : https://expo.dev/accounts/mimiche/projects/guitar-tabs
+- `eas-cli` n'est pas installé sur la machine : tout passe par `npx eas-cli@latest`
+- Le login est **interactif** (`npx eas-cli@latest login`, session dans `~/.expo/state.json`) : impossible depuis un shell d'agent, il faut le faire soi-même au préalable. En mode `--non-interactive`, `eas init` exige `--force` pour créer le projet.
+
+```bash
+npx eas-cli@latest build --profile preview --platform android   # APK installable direct
+npx eas-cli@latest build --profile production --platform android
+```
+
+Les profils sont dans `eas.json` : `preview` est en `apk` + `distribution: internal`, c'est celui à utiliser pour installer sur son propre téléphone (l'URL du build en fin de commande, ou expo.dev → Builds). `development` suppose `expo-dev-client`, **absent des dépendances** — inutilisable en l'état. Côté iOS, un build sur appareil demande un compte Apple Developer payant et `app.json` n'a pas de `bundleIdentifier` : sur iPhone, rester sur Expo Go (`npm start`).
+
 ## Architecture
 
 ```
@@ -160,6 +173,19 @@ Les deux rendus (`Tablature` et `GrilleAccords`) acceptent `selection` + `onMesu
 
 Direction retenue : **encre & blanc froid** — quasi monochrome, fond gris froid (`#F1F2F5`), papier blanc, frettes presque noires (`#14161A`), un seul accent bleu d'encre (`#2F4FCF`) pour les techniques, les badges et les actions. Rien ne doit concurrencer visuellement les chiffres de frette.
 
+## Identité visuelle (`assets/`)
+
+L'icône est un **fragment d'arpège** : 6 cordes, une barre de mesure bleue à gauche, quatre chiffres de frette (`2 0 3 2`) en Plus Jakarta Sans ExtraBold dont le dernier en accent — le motif de l'app en miniature, sur fond encre. Les cordes sont en **couleurs opaques pré-mélangées** (blanc froid sur encre), jamais en blanc semi-transparent : l'`adaptive-icon` a un fond transparent et les rectangles qui interrompent les cordes derrière chaque chiffre deviendraient visibles.
+
+| Fichier | Taille | Rôle |
+| --- | --- | --- |
+| `icon.png` | 1024, opaque | iOS + stores |
+| `adaptive-icon.png` | 1024, transparent | foreground Android, motif à 66 % pour tenir dans la zone de sécurité circulaire, sur `backgroundColor` `#14161A` |
+| `splash-icon.png` | 1024, transparent | carré encre arrondi centré, `imageWidth` 180 dp sur fond `#F1F2F5` |
+| `favicon.png` | 96 | web |
+
+Le splash est sur `#F1F2F5` (et non sur l'encre) pour enchaîner sans flash sur `styles.chargement` puis sur l'app, tous deux en `bgBase`. Il est masqué par `_layout.tsx` une fois les polices chargées.
+
 ## Règles de développement
 
 - **Pas de commentaires explicatifs dans le code** — le code doit être lisible seul ; ce qui mérite explication va dans ce fichier ou dans `docs/`.
@@ -177,6 +203,5 @@ Direction retenue : **encre & blanc froid** — quasi monochrome, fond gris froi
 - Confirmation ou annulation sur les suppressions de mesure / section (aujourd'hui immédiates ; reprendre la confirmation en place de la liste, `Alert` de RN ne marche pas sur web)
 - Champs `bpm`, `tonalite`, `statut`, `notes` toujours dans le modèle mais **ni éditables ni affichés** — à trancher : les rendre utiles (tri, filtre) ou les sortir du modèle. Le `capo` est éditable depuis l'éditeur.
 - Accords : saisie libre d'un accord hors du pavé (couleurs absentes de la liste : `add11`, `7b9`…) et diagrammes de position sur le manche — les basses, elles, sont couvertes par la rangée « Basse »
-- Icône, splash screen, favicon (`assets/`, à référencer dans `app.json`)
-- `eas init` pour obtenir le `projectId` (l'`eas.json` est prêt)
+- **Premier build EAS** : le projet est lié mais aucun build n'a encore tourné (voir « Build (EAS) »)
 - Tests (Jest + jest-expo), en reprenant la config d'Intermittence si besoin
