@@ -77,7 +77,7 @@ Termine par un résumé : nombre de bloquants, nombre de suggestions.
 1. Affiche le résultat de la review (LGTM)
 2. Génère un message de commit **conventional commit** basé sur le diff
 3. Demande confirmation à l'utilisateur avant de commiter
-4. Commite avec ce message (ajoute le co-author Claude)
+4. Commite avec ce message
 5. Push sur la branche courante avec `git push -u origin HEAD`
 
 ### Si le sub-agent trouve des **suggestions** et/ou des **bloquants** :
@@ -100,10 +100,7 @@ Lance `npm run typecheck` — un typecheck qui échoue est bloquant.
 
 - **Conventional commits** : `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `test:`
 - Message concis (1 ligne titre, corps optionnel si beaucoup de changements)
-- Ajoute toujours le co-author :
-  ```
-  Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
-  ```
+- **Pas de `Co-Authored-By`, pas de mention de Claude ou d'un outil** dans le message — ni en pied, ni dans le corps
 - Utilise un HEREDOC pour le message :
 
   ```bash
@@ -111,13 +108,26 @@ Lance `npm run typecheck` — un typecheck qui échoue est bloquant.
   feat: description courte
 
   Corps optionnel avec détails.
-
-  Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
   EOF
   )"
   ```
 
 ## Identité Git
 
-- Remote : à définir (repo GitHub perso pas encore créé)
-- Ne jamais modifier la config git globale ou locale
+Le `.gitconfig` **global** de la machine est celui du compte pro (Agicap) et n'a aucun `includeIf` : c'est la config **locale** du repo qui rétablit l'identité perso.
+
+- Remote : `git@github-perso:lucas-dormoy1/guitar-tabs.git` (alias SSH `github-perso` → clé `id_ed25519_perso`)
+- Identité locale attendue : `lucas-dormoy1 <luludorm@gmail.com>`
+- Les commits sont **signés en SSH** : `commit.gpgsign` et `gpg.format=ssh` viennent du global, `user.signingkey` local pointe sur `id_ed25519_perso.pub`
+
+**Avant le premier commit d'une session, vérifie** :
+
+```bash
+git config --local --get user.email   # doit renvoyer luludorm@gmail.com
+```
+
+Si ça renvoie autre chose (ou rien), **arrête-toi et signale-le** : le commit partirait sous l'adresse pro.
+
+Ne jamais modifier la config git, ni globale ni locale.
+
+Note : `git log --show-signature` affiche `gpg.ssh.allowedSignersFile needs to be configured` et `%G?` vaut `N`. C'est normal — seule la *vérification* locale n'est pas configurée. Les commits sont bien signés, c'est GitHub qui les vérifie.
